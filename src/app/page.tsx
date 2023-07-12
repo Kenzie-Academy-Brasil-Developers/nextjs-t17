@@ -1,4 +1,4 @@
-import { api } from '@/services/api'
+import { api, API_BASE_URL } from '@/services/api'
 import Link from 'next/link';
 import styles from './page.module.css'
 
@@ -11,9 +11,11 @@ export interface INew{
   author: string;
 }
 
-async function getNews(){
+async function getNews(): Promise<INew[] | null>{
   try {
-    const { data } = await api.get<INew[]>('/news');
+    //O axios ele não está 100% compátivel com as requisições de lado servidor do nextJS
+    const response = await fetch(`${API_BASE_URL}/news`, { next: { revalidate: 60 }});
+    const data = await response.json();
     return data;
   } catch (error) {
     console.log(error);
